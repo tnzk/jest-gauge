@@ -15,3 +15,5 @@ function createTransformer(
   const transformed = buildTransformedSource(specs, stepStore);
   return _process(transformed, sourcePath, config, options);
 }
+
+module.exports = { process: createTransformer }
