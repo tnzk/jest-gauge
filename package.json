@@ -1,23 +1,44 @@
 {
-  "parivate": true,
   "name": "@tnzk/jest-gauge",
-  "version": "0.0.2",
   "description": "Write Gauge-like acceptance tests with Jest-based steps",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "npx jest",
-    "build": "npx esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node"
-  },
-  "author": "@tnzk",
+  "version": "0.0.3",
   "license": "BSD-3-Clause",
+  "author": "@tnzk",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "test": "npx jest && npm run package-check",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "npx esbuild src/index.ts --format=esm --platform=node --bundle --outfile=./dist/index.mjs.js",
+    "build:cjs": "npx esbuild src/index.ts --format=cjs --platform=node --bundle --outfile=./dist/index.cjs.js",
+    "prepublish": "npm run build",
+    "package-check": "npx package-check"
+  },
   "dependencies": {
     "markdown-it": "^12.0.6",
     "markdown-it-ast": "0.0.1"
   },
   "devDependencies": {
+    "@skypack/package-check": "^0.2.2",
     "@types/jest": "^26.0.23",
     "esbuild": "^0.12.1",
     "esbuild-jest": "^0.5.0",
     "jest": "^26.6.3"
-  }
+  },
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
+  "exports": {
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.esm.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tnzk/jest-gauge"
+  },
+  "files": [
+    "dist/index.cjs.js",
+    "dist/index.mjs.js",
+    "src/@types/jest-gauge.d.ts"
+  ],
+  "keywords": ["testing", "gauge", "jest", "atdd"]
 }
