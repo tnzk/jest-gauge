@@ -16,4 +16,6 @@ function createTransformer(
   return _process(transformed, sourcePath, config, options);
 }
 
-module.exports = { process: createTransformer }
+export default {
+  process: createTransformer
+}

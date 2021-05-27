@@ -1,9 +1,9 @@
-const MarkdownIt = require('markdown-it');
-const MarkdownItAST = require('markdown-it-ast');
-const md = new MarkdownIt({});
+import MarkdownIt from 'markdown-it';
+import { makeAST } from 'markdown-it-ast';
 
 export const buildTestPlanFromSpec = (markdown:string) => {
-  const ast = MarkdownItAST.makeAST(md.parse(markdown));
+  const md = new MarkdownIt({});
+  const ast = makeAST(md.parse(markdown, {}));
   const specs:Spec[] = [];
   let currentSpec:Spec = {
     scenarios: [],
@@ -12,6 +12,7 @@ export const buildTestPlanFromSpec = (markdown:string) => {
     tags: [],
     teardownSteps: [],
   };
+
   let currentScenario:Scenario = {
     paragraphs: [],
     steps: [],
@@ -19,19 +20,9 @@ export const buildTestPlanFromSpec = (markdown:string) => {
   };
   let inScenario = false;
 
-type Node = {
-  type: string
-  nodeType: string
-  openNode: {
-    tag: string
-  }
-  content: string
-  children: Node[]
-}
-
-  const teardownIndex = ast.findIndex((node:Node) => node.type == 'hr');
+  const teardownIndex = ast.findIndex((node:AstNode) => node.type == 'hr');
   const teardownAst = ast.slice(teardownIndex);
-  ast.slice(0, teardownIndex).forEach((node:Node, i:number) => {
+  ast.slice(0, teardownIndex).forEach((node:AstNode, i:number) => {
     switch (node.nodeType) {
       case 'heading':
         if (node.openNode.tag == 'h1') {
@@ -66,7 +57,7 @@ type Node = {
               ...content
                 .split(':')[1]
                 .split(',')
-                .map(s => s.replace(/[\W\r\n]+/gm, '')),
+                .map((s:string) => s.replace(/[\W\r\n]+/gm, '')),
             );
           } else {
             inventory.paragraphs?.push(content);
@@ -76,8 +67,8 @@ type Node = {
       case 'bullet_list':
         const inventory = inScenario ? currentScenario : currentSpec;
         const listItems = node.children
-          .flatMap((n:Node) => n.children.flatMap((p:Node) => p.children))
-          .flatMap((c:Node) => c.content);
+          .flatMap((n:AstNode) => n.children.flatMap((p:AstNode) => p.children))
+          .flatMap((c:AstNode) => c.content);
         inventory.steps?.push(...listItems);
         break;
     }
@@ -85,13 +76,13 @@ type Node = {
   currentSpec.scenarios?.push(currentScenario);
   specs.push(currentSpec);
 
-  teardownAst.forEach((node:Node) => {
+  teardownAst.forEach((node:AstNode) => {
     switch (node.nodeType) {
       case 'bullet_list': // TODO: Be DRY
         const latestSpec = specs[specs.length - 1];
         const listItems = node.children
-          .flatMap(n => n.children.flatMap(p => p.children))
-          .flatMap(c => c.content);
+          .flatMap((n:AstNode) => n.children.flatMap((p:AstNode) => p.children))
+          .flatMap((c:AstNode) => c.content);
         latestSpec.teardownSteps?.push(...listItems);
         break;
     }

@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const _crypto = require('crypto');
+import { readFileSync, readdirSync } from 'fs';
+import { dirname, basename, join } from 'path';
+import { createHash } from 'crypto';
 
 const sha1 = (s:string) => {
-  const shasum = _crypto.createHash('sha1');
+  const shasum = createHash('sha1');
   shasum.update(s);
   return shasum.digest('hex');
 };
@@ -11,19 +11,15 @@ const sha1 = (s:string) => {
 
 // TODO: Exports a private function just to make it easy to test
 export const collectSteps = (filename:string) => {
-  const dir = path.dirname(filename);
-  const basename = path.basename(filename, '.spec');
-  const files = fs.readdirSync(path.join(dir, basename), { encoding: 'utf-8', withFileTypes: false });
+  const dir = dirname(filename);
+  const bn = basename(filename, '.spec');
+  const files = readdirSync(join(dir, bn), { encoding: 'utf-8', withFileTypes: false });
   return files
     .map((filename:string) =>
-      fs.readFileSync(path.join(dir, basename, filename), { encoding: 'utf-8' }),
+      readFileSync(join(dir, bn, filename), { encoding: 'utf-8' }),
     )
     .join('\n');
 };
-
-interface StepMap {
-  [sha1OfStep: string]: string;
-}
 
 const specs:Spec[] = [
   {
