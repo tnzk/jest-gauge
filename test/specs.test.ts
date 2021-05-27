@@ -1,5 +1,5 @@
 // TODO: blatant null checks
-
+import { test, expect, describe } from '@jest/globals'
 import { buildTestPlanFromSpec } from '../src/specs'
 
 const markdown = `

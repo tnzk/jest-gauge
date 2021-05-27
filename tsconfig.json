@@ -14,5 +14,5 @@
       "markdown-it"
     ], 
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "./test/**/*"]
 }

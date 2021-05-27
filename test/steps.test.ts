@@ -1,3 +1,4 @@
+import { jest, test, expect, describe, beforeEach } from '@jest/globals'
 import fs from 'fs';
 import { loadSteps, buildTransformedSource, collectSteps } from '../src/steps'
 
@@ -50,7 +51,7 @@ test('transformes into syntactically correct JavaScript code', () => {
   const sandboxedSource = `(() => { consol${transformedSource} })`;
   const vm = require('vm');
   const context = vm.createContext();
-  expect(vm.runInContext(sandboxedSource, context)).not.toThrow(SyntaxError);
+  expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
 });
 
 const specs = [
