@@ -7,7 +7,9 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "test": "npx jest",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npx jest",
+    "test:e2e": "npx jest --config jest.example.config.mjs",
     "typecheck": "tsc -p . --noEmit",
     "build": "npm run build:esm && npm run build:cjs",
     "build:esm": "npx esbuild src/index.ts --format=esm --platform=node --bundle --outfile=./dist/index.mjs",
