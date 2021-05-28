@@ -10,8 +10,8 @@
     "test": "npx jest",
     "typecheck": "tsc -p . --noEmit",
     "build": "npm run build:esm && npm run build:cjs",
-    "build:esm": "npx esbuild src/index.ts --format=esm --platform=node --bundle --outfile=./dist/index.mjs.js",
-    "build:cjs": "npx esbuild src/index.ts --format=cjs --platform=node --bundle --outfile=./dist/index.cjs.js",
+    "build:esm": "npx esbuild src/index.ts --format=esm --platform=node --bundle --outfile=./dist/index.mjs",
+    "build:cjs": "npx esbuild src/index.ts --format=cjs --platform=node --bundle --outfile=./dist/index.cjs",
     "prepublish": "npm run build",
     "analysis": "npm run build:esm -- --metafile='analysis.json'",
     "package-check": "npx package-check"
@@ -28,19 +28,19 @@
     "esbuild-jest": "^0.5.0",
     "jest": "^26.6.3"
   },
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.esm.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.ms",
   "exports": {
-    "require": "./dist/index.cjs.js",
-    "import": "./dist/index.esm.js"
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.mjs"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/tnzk/jest-gauge"
   },
   "files": [
-    "dist/index.cjs.js",
-    "dist/index.mjs.js",
+    "dist/index.cjs",
+    "dist/index.mjs",
     "src/@types/jest-gauge.d.ts"
   ],
   "types": "src/@types/jest-gauge.d.ts",
