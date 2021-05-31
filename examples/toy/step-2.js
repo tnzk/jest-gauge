@@ -1,3 +1,4 @@
+/*
 test('User must be logged in as "admin"', async () => {
   expect(1).toBe(1);
 });
@@ -10,3 +11,4 @@ test('Search for product "unknown"', async () => {
 test('The search results will be empty', async () => {
   expect(1).toBe(1);
 });
+*/

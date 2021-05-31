@@ -18,7 +18,7 @@ Tags: successful,
 Some writeup of this scenario
 
 - A step for this test
-- Another step for this test
+- Another step with a "simple parameter"
 - Yet another step for this test
 
 ___
@@ -68,7 +68,14 @@ test('captures correct scenario steps', () => {
   const specs = buildTestPlanFromSpec(markdown);
   const scenario = getFirstScenario(specs)
   expect(scenario?.steps?.length).toBe(3);
-  expect(scenario?.steps?.[1]).toBe('Another step for this test');
+  expect(scenario?.steps?.[2]).toBe('Yet another step for this test');
+});
+
+test('captures correct scenario steps with simple parameter', () => {
+  const specs = buildTestPlanFromSpec(markdown);
+  const scenario = getFirstScenario(specs)
+  expect(scenario?.steps?.length).toBe(3);
+  expect(scenario?.steps?.[1]).toBe('Another step with a "simple parameter"');
 });
 
 test('captures correct scenario paragraphs', () => {

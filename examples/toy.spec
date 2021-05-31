@@ -17,7 +17,7 @@ For an existing product name, the search result will contain the product name
 
 
 ## Unsuccessfull search
-Tags: test
+Tags: test, draft
 
 On an unknown product name search the search results will be empty
 

@@ -1,5 +1,5 @@
-test('User must be logged in as "admin"', async () => {
-  expect(1).toBe(1);
+test('User must be logged in as <role>', (role) => {
+  expect(role).toBe('admin');
 });
 
 test('Open the product search page', async () => {

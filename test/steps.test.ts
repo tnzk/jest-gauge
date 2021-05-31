@@ -4,7 +4,6 @@ import { loadSteps, buildTransformedSource, collectSteps } from '../src/steps'
 
 jest.mock('fs');
 
-
 beforeEach(() => {
   jest.resetModules();
 });
@@ -18,10 +17,10 @@ test('loads steps in a directory adjacent to the spec file', () => {
   jest.spyOn(fs, "readFileSync")
     .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
     .mockImplementationOnce(
-      () => "test('another test', () => expect(0b10).toBe(2), 10000)",
+      () => "test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
     );
   expect(collectSteps('../foo/bar/example.spec')).toBe(
-    "test('a test', () => expect(0x1).toBe(1) )\ntest('another test', () => expect(0b10).toBe(2), 10000)",
+    "test('a test', () => expect(0x1).toBe(1) )\ntest('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
   );
 });
 
@@ -38,17 +37,40 @@ test('loads steps into an entry with a SHA1 key of its description', () => {
   expect(Object.keys(steps)).toContain('afc8edc74ae9e7b8d290f945a6d613f1d264a2b2'); // SHA1('another test')
 });
 
+test('loads a step with a parameter after replacing it with a placeholder', () => {
+  // @ts-ignore
+  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
+  jest.spyOn(fs, "readFileSync")
+    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
+    .mockImplementationOnce(() => "test('a test <name>', () => expect(0x1).toBe(1) )");
+  const steps = loadSteps('../foo/bar/example.spec');
+  expect(Object.keys(steps)).toContain('c59e6f2f60fb629fa11746542e4e64f344932550'); // $ echo -n "a test %1" | shasum
+});
+
+test('replaces placeholders with an actual simple parameter passed', () => {
+  // @ts-ignore
+  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
+  jest.spyOn(fs, "readFileSync")
+    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
+    .mockImplementationOnce(
+      () => "test('a test <name>', (name) => expect(name).toBe(\"admin\"), 10000)",
+    );
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource(specs, steps);
+  expect(transformedSource).toContain('a test "Normad"')
+});
+
 test('transformes into syntactically correct JavaScript code', () => {
   // @ts-ignore
   jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
   jest.spyOn(fs, "readFileSync")
     .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
     .mockImplementationOnce(
-      () => "test('another test', () => expect(0b10).toBe(2))",
+      () => "test('a test <name>', (name) => expect(name).toBe(\"admin\"), 10000)",
     );
   const steps = loadSteps('../foo/bar/example.spec');
   const transformedSource = buildTransformedSource(specs, steps);
-  const sandboxedSource = `(() => { consol${transformedSource} })`;
+  const sandboxedSource = `(() => { ${transformedSource} })`;
   const vm = require('vm');
   const context = vm.createContext();
   expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
@@ -60,9 +82,9 @@ const specs = [
     scenarios: [
       {
         title: 'Title of A Scenario',
-        steps: ['a test', 'another test'],
+        steps: ['a test', 'a test "Normad"'],
       },
     ],
-    steps: ['a test', 'another test'],
+    steps: ['a test', 'another test with parameter called "Stan"'],
   },
 ];
