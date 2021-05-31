@@ -9,6 +9,7 @@
   "scripts": {
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "npx jest",
+    "pretest:e2e": "npm run build",
     "test:e2e": "npx jest --config jest.example.config.mjs",
     "typecheck": "tsc -p . --noEmit",
     "build": "npm run build:esm && npm run build:cjs",
