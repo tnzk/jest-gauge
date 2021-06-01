@@ -1,5 +1,5 @@
 test('User must be logged in as <role>', (role) => {
-  expect(role).toBe('admin');
+  expect(role).toMatch(/customer|admin|superviser/);
 });
 
 test('Open the product search page', async () => {
