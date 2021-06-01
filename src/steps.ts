@@ -74,6 +74,9 @@ const substituteDynamicParameters = (title:string, dataTable:DataTable):string[]
 }
 
 const resolveSimpleParameters = (title:string, steps:StepMap) => {
+  // > The code must have the same number of parameters as mentioned in the step.
+  // https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#step-implementations
+  // So it should throw if a test case has insufficient number of parameters
   const { stripped, args } = stripParameters(title)
   const stepSource = steps[sha1(stripped)]
   return substituteSimpleParameters(stepSource, args);

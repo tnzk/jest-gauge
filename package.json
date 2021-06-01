@@ -1,7 +1,7 @@
 {
   "name": "@tnzk/jest-gauge",
-  "description": "Write Gauge-like acceptance tests with Jest-based steps",
-  "version": "0.0.3",
+  "description": "Write acceptance tests in Gauge syntax with Jest-based steps",
+  "version": "0.0.4",
   "license": "BSD-3-Clause",
   "author": "@tnzk",
   "type": "module",
