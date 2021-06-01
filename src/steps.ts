@@ -20,14 +20,6 @@ export const collectSteps = (filename:string) => {
     .join('\n');
 };
 
-const substituteParameters = (func:stringifiedFunction, params:string[]) => {
-  let updatedFunction;
-  params.forEach((param, j) => {
-    updatedFunction = func.replace(new RegExp(`%${j+1}`, 'g'), param);
-  });
-  return updatedFunction;
-}
-
 const stripParameters = (src:string) => {
   const regex = /<(.*?)>|(\".*?\")/g;
   let stripped = src;
@@ -56,21 +48,66 @@ export const loadSteps = function(filename:string):StepMap {
   return steps;
 };
 
+const substituteSimpleParameters = (func:stringifiedFunction, params:string[]):stringifiedFunction => {
+  let updatedFunction = func;
+  params.forEach((param, j) => {
+    updatedFunction = updatedFunction.replace(new RegExp(`%${j+1}`, 'g'), param);
+  });
+  return updatedFunction;
+}
+
+const substituteDynamicParameters = (title:string, dataTable:DataTable):string[] => {
+  const re = /<(.*?)>/g;
+  let match, i = 0;
+  let titles:any[] = [];
+  while ((match = re.exec(title)) !== null) {
+    const tag = match[0];
+    const fieldName = match[1];
+    const fieldLength = dataTable.header.length;
+    const fieldIndex = dataTable.header.indexOf(fieldName);
+    dataTable.body.forEach((s, i) => {
+      if ((i % fieldLength) == fieldIndex)
+        titles.push(title.replace(tag, `"${s}"`))
+    })
+  }
+  return titles;
+}
+
+const resolveSimpleParameters = (title:string, steps:StepMap) => {
+  const { stripped, args } = stripParameters(title)
+  const stepSource = steps[sha1(stripped)]
+  return substituteSimpleParameters(stepSource, args);
+}
+
 export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
-  const buildScenario = (scenario:Scenario) => {
-    const skipAnnotation = scenario.tags?.includes('draft') ? '.skip' : '';
-    return `describe${skipAnnotation}('${scenario.title}', () => {
-        const senarioStore = {}
-        beforeAll(() => {
-        })
-        ${scenario.steps?.map((title:string) => {
-          const { stripped, args } = stripParameters(title)
-          const stepSource = steps[sha1(stripped)]
-          return substituteParameters(stepSource, args);
-        }).join('\n')}
-      })`;
-  };
+
   const buildSpec = (spec:Spec) => {
+
+    const buildScenario = (scenario:Scenario) => {
+      const dataTable = spec.dataTable;
+      const skipAnnotation = scenario.tags?.includes('draft') ? '.skip' : '';
+
+      const buildStep = (title:string) => {
+        if (/<.*?>/.test(title)) { // steps that contains dynamic parameter (<dyn_param>)
+          if (dataTable) {
+            const titlesWithOnlySimpleParameters = substituteDynamicParameters(title, dataTable)
+            return titlesWithOnlySimpleParameters
+              .flatMap((title) => resolveSimpleParameters(title, steps))
+              .join();
+          } // TODO: should this throw?
+        } else {
+          return resolveSimpleParameters(title, steps);
+        }
+      }
+
+      return `describe${skipAnnotation}('${scenario.title}', () => {
+          const senarioStore = {}
+          beforeAll(() => {
+          })
+          ${scenario.steps?.map(buildStep).join('\n')}
+        })`;
+    };
+
     return `
     describe('${spec.title}', () => {
         const specStore = {}

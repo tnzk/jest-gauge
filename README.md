@@ -28,9 +28,8 @@ module.exports = {
   - [ ] Step alias
 - [ ] Step parameters
   - [x] Simple parameters
-  - [ ] Dynamic parameters
-    - [ ] with Data table
-    - [ ] with Concept
+  - [ ] Dynamic parameters with data table
+  - [ ] Dynamic parameters with Concept
   - [ ] Table parameters
   - [ ] Special parameters
     - [ ] File

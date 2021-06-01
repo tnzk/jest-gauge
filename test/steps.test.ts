@@ -60,6 +60,21 @@ test('replaces placeholders with an actual simple parameter passed', () => {
   expect(transformedSource).toContain('a test "Normad"')
 });
 
+test('replaces placeholders with dynamic parameters fed through a data table', () => {
+  // @ts-ignore
+  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
+  jest.spyOn(fs, "readFileSync")
+    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
+    .mockImplementationOnce(
+      () => "test('a test <name>', (name) => expect(name).toBe(\"admin\"), 10000)",
+    );
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource(specs, steps);
+  expect(transformedSource).toContain('a test "Alpha"')
+  expect(transformedSource).toContain('a test "Bravo"')
+  expect(transformedSource).toContain('a test "Charlie"')
+});
+
 test('transformes into syntactically correct JavaScript code', () => {
   // @ts-ignore
   jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
@@ -76,15 +91,19 @@ test('transformes into syntactically correct JavaScript code', () => {
   expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
 });
 
-const specs = [
+const specs:Spec[] = [
   {
     title: 'Title of An Acceptance Test',
     scenarios: [
       {
         title: 'Title of A Scenario',
-        steps: ['a test', 'a test "Normad"'],
+        steps: ['a test', 'a test "Normad"', 'a test <name>'],
       },
     ],
+    dataTable: {
+      header: ['id', 'name'],
+      body: ['1', 'Alpha', '2', 'Bravo', '3', 'Charlie']
+    },
     steps: ['a test', 'another test with parameter called "Stan"'],
   },
 ];
