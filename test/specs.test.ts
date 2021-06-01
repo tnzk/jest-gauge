@@ -6,6 +6,12 @@ const markdown = `
 # Title of An Acceptance Test
 Tags: draft, admin
 
+|id| name      |
+|--|-----------|
+|1 | Alice     |
+|2 | Bob       |
+|3 | Eve       |
+
 Some writeup of this acceptance test
 
 - A prerequisite step
@@ -95,7 +101,14 @@ test('captures correct scenario tags, accepting multiline ones', () => {
 
 test('captures correct teardown script', () => {
   const specs = buildTestPlanFromSpec(markdown);
-  expect(specs?.[0].teardownSteps?.length).toBe(2);
-  expect(specs?.[0].teardownSteps?.[0]).toBe('Remove some data');
-  expect(specs?.[0].teardownSteps?.[1]).toBe('Shutdown test server');
+  expect(specs[0].teardownSteps?.length).toBe(2);
+  expect(specs[0].teardownSteps?.[0]).toBe('Remove some data');
+  expect(specs[0].teardownSteps?.[1]).toBe('Shutdown test server');
 });
+
+test('can have a data table', () => {
+  const specs = buildTestPlanFromSpec(markdown);
+  expect(specs[0].dataTable).toBeDefined();
+  expect(specs[0].dataTable?.header).toBeDefined();
+  expect(specs[0].dataTable?.body).toBeDefined();
+})

@@ -14,6 +14,12 @@ type Spec = {
  steps?:      stringifiedFunction[]
  scenarios?:  Scenario[]
  teardownSteps?: stringifiedFunction[]
+ dataTable?:  DataTable
+}
+
+type DataTable = {
+  header: string[],
+  body: string[],
 }
 
 declare   interface StepMap {

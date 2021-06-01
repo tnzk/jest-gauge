@@ -1,6 +1,23 @@
 import MarkdownIt from 'markdown-it';
 import { makeAST } from 'markdown-it-ast';
 
+const traverseContent = (partialAst:AstNode):string[] => 
+  partialAst.content ? [partialAst.content] : partialAst.children.flatMap(traverseContent);
+
+const tableToMap = (partialAst:AstNode):(DataTable | undefined) => {
+  if (partialAst.nodeType != 'table') return undefined;
+  // TODO: what if a table node has more than one thead or tbody?
+  const headerAst = partialAst.children.find((node:AstNode) => node.nodeType == 'thead')
+  const bodyAst   = partialAst.children.find((node:AstNode) => node.nodeType == 'tbody')
+  if (!(headerAst && bodyAst)) return undefined;
+
+  const dataTable = {
+    header: traverseContent(headerAst),
+    body: traverseContent(bodyAst)
+  };
+  return dataTable;
+}
+
 export const buildTestPlanFromSpec = (markdown:string) => {
   const md = new MarkdownIt({});
   const ast = makeAST(md.parse(markdown, {}));
@@ -70,6 +87,10 @@ export const buildTestPlanFromSpec = (markdown:string) => {
           .flatMap((n:AstNode) => n.children.flatMap((p:AstNode) => p.children))
           .flatMap((c:AstNode) => c.content);
         inventory.steps?.push(...listItems);
+        break;
+      case 'table':
+        // TODO: Does Gauge accept a spec with multiple data tables?
+        currentSpec.dataTable = tableToMap(node)
         break;
     }
   });
