@@ -37,12 +37,13 @@ const stripParameters = (src:string) => {
 export const loadSteps = function(filename:string):StepMap {
   const steps:StepMap = {};
   // `test` looks unused but is actually necessary to be called
-  const test = (testTitle:string, testFunction:string) => {
+  const test = (testTitle:string, testFunction:string, timeout?:number) => {
     const { stripped: title, args } = stripParameters(testTitle);
     const functionString = stripParameters(testFunction.toString()).stripped;
-    steps[sha1(title)] =`test('${title}', () => {
-      (${functionString})(${args.map((_, i) => `%${i+1}`).join(',')})
-    })`;
+    const timeoutString = timeout ? `, ${timeout}` : '';
+    steps[sha1(title)] =`test('${title}', async () => { // TODO: make it aync if the original is
+      await (${functionString})(${args.map((_, i) => `%${i+1}`).join(',')})
+    }${timeoutString})`;
   };
   eval(collectSteps(filename));
   return steps;
