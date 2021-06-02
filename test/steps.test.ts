@@ -8,7 +8,7 @@ beforeEach(() => {
   jest.resetModules();
 });
 
-test('loads steps in a directory adjacent to the spec file', () => {
+test('loads steps in a directory with the same basename adjacent to the spec file', () => {
   // TODO: apparently a test with internal implementation knowledge.
   // @ts-ignore
   //   Looks like encountering a landmine of TypeScript here:
@@ -22,6 +22,12 @@ test('loads steps in a directory adjacent to the spec file', () => {
   expect(collectSteps('../foo/bar/example.spec')).toBe(
     "test('a test', () => expect(0x1).toBe(1) )\ntest('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
   );
+});
+
+test('is okay if no directory with the same basename adjacent to the spec file', () => {
+  // @ts-ignore
+  jest.spyOn(fs, "readdirSync").mockImplementation(() => { throw new Error('ENOENT') });
+  expect(collectSteps('../foo/bar/example.spec')).toBe('');
 });
 
 test('loads steps into an entry with a SHA1 key of its description', () => {
@@ -90,6 +96,22 @@ test('transformes into syntactically correct JavaScript code', () => {
   const context = vm.createContext();
   expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
 });
+
+test('has placeholder steps if one or more steps hav[e] no steps', () => {
+  // @ts-ignore
+  jest.spyOn(fs, "readdirSync").mockImplementation(() => { throw new Error('ENOENT') });
+
+  const specs:Spec[] = [{
+    title: 'a spec',
+    scenarios: [],
+    steps: [],
+  }];
+
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource(specs, steps);
+  expect(transformedSource).toContain('currently no steps found for this spec');
+});
+
 
 const specs:Spec[] = [
   {

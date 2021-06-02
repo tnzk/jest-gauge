@@ -12,12 +12,16 @@ const sha1 = (s:string) => {
 export const collectSteps = (filename:string) => {
   const dir = dirname(filename);
   const bn = basename(filename, '.spec');
-  const files = readdirSync(join(dir, bn), { encoding: 'utf-8', withFileTypes: false });
-  return files
+  try {
+    const files = readdirSync(join(dir, bn), { encoding: 'utf-8', withFileTypes: false });
+    return files
     .map((filename:string) =>
       readFileSync(join(dir, bn, filename), { encoding: 'utf-8' }),
     )
     .join('\n');
+  } catch {
+    return '';
+  }
 };
 
 const stripParameters = (src:string) => {
@@ -84,10 +88,12 @@ const resolveSimpleParameters = (title:string, steps:StepMap) => {
 }
 
 export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
+  const placeholderStep = "test('currently no steps found for this spec', () => { expect(false).toBe(true) })";
 
   const buildSpec = (spec:Spec) => {
 
     const buildScenario = (scenario:Scenario) => {
+
       const dataTable = spec.dataTable;
       const skipAnnotation = scenario.tags?.includes('draft') ? '.skip' : '';
 
@@ -104,20 +110,29 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
         }
       }
 
+      const stepsString = (scenario.steps && scenario.steps.length > 0)
+        ? scenario.steps.map(buildStep).join('\n')
+        : placeholderStep;
+
       return `describe${skipAnnotation}('${scenario.title}', () => {
           const senarioStore = {}
           beforeAll(() => {
           })
-          ${scenario.steps?.map(buildStep).join('\n')}
+          ${stepsString}
         })`;
     };
 
+    const scenariosString = (spec.scenarios && spec.scenarios.length > 0)
+      ? spec.scenarios?.map(buildScenario).join('\n')
+      : placeholderStep;
+
+    const skipAnnotation = spec.tags?.includes('draft') ? '.skip' : '';
     return `
-    describe('${spec.title}', () => {
+    describe${skipAnnotation}('${spec.title}', () => {
         const specStore = {}
         ${spec.steps?.map((s:string) => steps[sha1(s)]).join('\n')}
-        ${spec.scenarios?.map(buildScenario).join()}
+        ${scenariosString}
       })`;
   };
-  return specs.map(buildSpec).join();
+  return specs.map(buildSpec).join('\n');
 };
