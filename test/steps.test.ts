@@ -8,7 +8,7 @@ beforeEach(() => {
   jest.resetModules();
 });
 
-test('loads steps in a directory with the same basename adjacent to the spec file', () => {
+const setupMocksForTypicalStepsImpls = () => {
   // TODO: apparently a test with internal implementation knowledge.
   // @ts-ignore
   //   Looks like encountering a landmine of TypeScript here:
@@ -19,6 +19,10 @@ test('loads steps in a directory with the same basename adjacent to the spec fil
     .mockImplementationOnce(
       () => "test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
     );
+};
+
+test('loads steps in a directory with the same basename adjacent to the spec file', () => {
+  setupMocksForTypicalStepsImpls();
   expect(collectSteps('../foo/bar/example.spec')).toBe(
     "test('a test', () => expect(0x1).toBe(1) )\ntest('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
   );
@@ -44,51 +48,29 @@ test('loads steps into an entry with a SHA1 key of its description', () => {
 });
 
 test('loads a step with a parameter after replacing it with a placeholder', () => {
-  // @ts-ignore
-  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
-  jest.spyOn(fs, "readFileSync")
-    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
-    .mockImplementationOnce(() => "test('a test <name>', () => expect(0x1).toBe(1) )");
+  setupMocksForTypicalStepsImpls();
   const steps = loadSteps('../foo/bar/example.spec');
-  expect(Object.keys(steps)).toContain('c59e6f2f60fb629fa11746542e4e64f344932550'); // $ echo -n "a test %1" | shasum
+  expect(Object.keys(steps)).toContain('62ea94ebb9bc42474eea27c575e23c72df375dc4'); // $ echo -n "a test %1" | shasum
 });
 
 test('replaces placeholders with an actual simple parameter passed', () => {
-  // @ts-ignore
-  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
-  jest.spyOn(fs, "readFileSync")
-    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
-    .mockImplementationOnce(
-      () => "test('a test <name>', (name) => expect(name).toBe(\"admin\"), 10000)",
-    );
+  setupMocksForTypicalStepsImpls();
   const steps = loadSteps('../foo/bar/example.spec');
   const transformedSource = buildTransformedSource(specs, steps);
-  expect(transformedSource).toContain('a test "Normad"')
+  expect(transformedSource).toContain('another test with parameter called "Normad"')
 });
 
 test('replaces placeholders with dynamic parameters fed through a data table', () => {
-  // @ts-ignore
-  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
-  jest.spyOn(fs, "readFileSync")
-    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
-    .mockImplementationOnce(
-      () => "test('a test <name>', (name) => expect(name).toBe(\"admin\"), 10000)",
-    );
+  setupMocksForTypicalStepsImpls();
   const steps = loadSteps('../foo/bar/example.spec');
   const transformedSource = buildTransformedSource(specs, steps);
-  expect(transformedSource).toContain('a test "Alpha"')
-  expect(transformedSource).toContain('a test "Bravo"')
-  expect(transformedSource).toContain('a test "Charlie"')
+  expect(transformedSource).toContain('another test with parameter called "Alpha"')
+  expect(transformedSource).toContain('another test with parameter called "Bravo"')
+  expect(transformedSource).toContain('another test with parameter called "Charlie"')
 });
 
 test('transformes into syntactically correct JavaScript code', () => {
-  // @ts-ignore
-  jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
-  jest.spyOn(fs, "readFileSync")
-    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
-    .mockImplementationOnce(
-      () => "test('a test <name>', (name) => expect(name).toBe(\"admin\"), 10000)",
-    );
+  setupMocksForTypicalStepsImpls();
   const steps = loadSteps('../foo/bar/example.spec');
   const transformedSource = buildTransformedSource(specs, steps);
   const sandboxedSource = `(() => { ${transformedSource} })`;
@@ -119,13 +101,13 @@ const specs:Spec[] = [
     scenarios: [
       {
         title: 'Title of A Scenario',
-        steps: ['a test', 'a test "Normad"', 'a test <name>'],
+        steps: ['a test', 'another test with parameter called "Normad"', 'another test with parameter called <name>'],
       },
     ],
     dataTable: {
       header: ['id', 'name'],
       body: ['1', 'Alpha', '2', 'Bravo', '3', 'Charlie']
     },
-    steps: ['a test', 'another test with parameter called "Stan"'],
+    steps: ['a prerequisite', 'a prerequisite with "Param"'],
   },
 ];
