@@ -1,12 +1,22 @@
+:warning: **This is an experimental project in very early stage. Try out at your own risk**. Any form of contributions are warmly appreciated as long as you agree to publish the work under [BSD-3 license](./LICENSE). 日本語版も末尾にあります。
+
 # jest-gauge
 
-TODO
+Write executable acceptance tests (E2E tests) with Jest, in your mother tongue, just loosely structured in Markdown.
 
-# Usage
+## Install and setup
 
-TODO
+Assuming you're already using [Jest](https://jestjs.io/) for unit testing.
 
-```json:jest.config.js
+Install via npm (yarn or other package manager, unconfirmed):
+
+```bash
+$ npm install --save-dev @tnzk/jest-gauge
+```
+
+Add `jest.config.gauge.js`:
+
+```json
 module.exports = {
   roots: ['.'],
   moduleFileExtensions: ['js', 'spec'],
@@ -17,6 +27,64 @@ module.exports = {
   },
 };
 ```
+
+(we highly recommend to have another config than `jest.config.js` since setup for unit tests and acceptance/E2E tests tend to largely differ).
+
+## Your first acceptance test in Gauge-like Markdown
+
+Put a spec at `$REPO_ROOT/specs/welcome.spec`:
+
+```
+# Specification for the Welcome page
+
+Ordinary paragraphs are treated as comments, just ignored.
+
+## Scenario: Users open the site and see the welcome page
+
+* Open "https://duckduckgo.com/"
+* The user sees a cute cucumber-looking white bird
+```
+
+Put steps in `$REPO_ROOT/specs/welcome/steps.js`
+
+```
+test("Open <url>", (url) => {
+  expect(url).toBe('https://duckduckgo.com/');
+});
+
+test("The user sees a cute cucumber-looking white bird", () => {
+  expect("https://duckduckgo.com/assets/logo_homepage.normal.v108.svg").toContain('duck');
+});
+```
+
+Run tests:
+
+```bash
+$ npx jest --config=jest.config.gauge.js specs/
+```
+
+Then you'll see that it's nicely done:
+
+```
+ npx jest --config=jest.config.gauge.js specs/
+
+ PASS  examples/welcome.spec
+  Specification for the Welcome page
+    Scenario: Users open the site and see the welcome page
+      ✓ Open "https://duckduckgo.com/" (2 ms)
+      ✓ The user sees a cute cucumber-looking white bird
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        0.913 s
+```
+
+# Background
+
+I'm interested in [Gauge](https://docs.gauge.org) which looks a quite promising as an ATDD framework, however, it is a little too opinionated (at least for me) to integrate it an existing project, especially if you have had a bunch of unit and E2E tests in Jest there.
+
+So I've crafted a Jest extension which can recognize specification files (hopefully) compatible to of Gauge and execute steps you implemented in Jest vocabulary like test/expect among the others.
 
 # TODO
 
@@ -61,3 +129,7 @@ module.exports = {
   - [ ] Support RawSourceMap; [`source-map`](https://github.com/mozilla/source-map/blob/0.6.1/source-map.d.ts#L6-L12)
 
 cf. https://docs.gauge.org/writing-specifications.html
+
+# 日本語版
+
+まだありません :smile:
