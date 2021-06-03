@@ -114,10 +114,15 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
         ? scenario.steps.map(buildStep).join('\n')
         : placeholderStep;
 
+      const contextStepsString = (spec.steps && spec.steps.length > 0)
+        ? spec.steps.map(buildStep).join('\n')
+        : placeholderStep;
+
       return `describe${skipAnnotation}('${scenario.title}', () => {
           const senarioStore = {}
           beforeAll(() => {
           })
+          ${contextStepsString}
           ${stepsString}
         })`;
     };
@@ -130,7 +135,8 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
     return `
     describe${skipAnnotation}('${spec.title}', () => {
         const specStore = {}
-        ${spec.steps?.map((s:string) => steps[sha1(s)]).join('\n')}
+        beforeEach(() => {
+        });
         ${scenariosString}
       })`;
   };

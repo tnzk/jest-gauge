@@ -5,6 +5,8 @@ The admin user must be able to search for available products on the search page
 
 From: https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode
 
+* A context step
+
 |id| role       |
 |--|------------|
 |1 | customer   |

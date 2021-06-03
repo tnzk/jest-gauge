@@ -13,3 +13,7 @@ test('Search for product "Cup Cakes"', async () => {
 test('"Cup Cakes" should show up in the search results', async () => {
   expect(1).toBe(1);
 });
+
+test('A context step', async () => {
+  expect(1).toBe(1);
+});

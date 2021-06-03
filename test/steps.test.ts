@@ -17,14 +17,21 @@ const setupMocksForTypicalStepsImpls = () => {
   jest.spyOn(fs, "readFileSync")
     .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
     .mockImplementationOnce(
-      () => "test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
+      () => `
+test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000);
+test('a prerequisite', () => expect(0b11).toBe(3), 10000);
+test('a prerequisite with <param>', (param) => expect(param).toBe('Param'), 10000)`
     );
 };
 
 test('loads steps in a directory with the same basename adjacent to the spec file', () => {
   setupMocksForTypicalStepsImpls();
   expect(collectSteps('../foo/bar/example.spec')).toBe(
-    "test('a test', () => expect(0x1).toBe(1) )\ntest('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000)",
+    `test('a test', () => expect(0x1).toBe(1) )
+
+test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000);
+test('a prerequisite', () => expect(0b11).toBe(3), 10000);
+test('a prerequisite with <param>', (param) => expect(param).toBe('Param'), 10000)`
   );
 });
 
@@ -85,8 +92,8 @@ test('has placeholder steps if one or more steps hav[e] no steps', () => {
 
   const specs:Spec[] = [{
     title: 'a spec',
-    scenarios: [],
     steps: [],
+    scenarios: [],
   }];
 
   const steps = loadSteps('../foo/bar/example.spec');
@@ -98,6 +105,7 @@ test('has placeholder steps if one or more steps hav[e] no steps', () => {
 const specs:Spec[] = [
   {
     title: 'Title of An Acceptance Test',
+    steps: ['a prerequisite', 'a prerequisite with "Param"'],
     scenarios: [
       {
         title: 'Title of A Scenario',
@@ -108,6 +116,5 @@ const specs:Spec[] = [
       header: ['id', 'name'],
       body: ['1', 'Alpha', '2', 'Bravo', '3', 'Charlie']
     },
-    steps: ['a prerequisite', 'a prerequisite with "Param"'],
   },
 ];
