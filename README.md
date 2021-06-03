@@ -27,7 +27,7 @@ module.exports = {
   - [x] Support [data tables](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#table-driven-scenario)
   - [ ] Step alias
   - [x] Teardown steps
-- [ ] Step parameters
+- [ ] Steps
   - [x] Simple parameters
   - [x] Dynamic parameters with data table
   - [ ] Dynamic parameters with Concept
@@ -37,12 +37,11 @@ module.exports = {
     - [ ] Table
 - [ ] Scenario
   - [ ] [Table driven scenario](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#table-driven-scenario) (note that it is in experiment as of Gauge 1.0.3)
-- [ ] Concepts
+  - [ ] [Data-driven execution](https://docs.gauge.org/execution.html?os=macos&language=javascript&ide=vscode#data-driven-execution)- [ ] Concepts
 - [x] Contexts
 - [ ] Continue on Failure
 - [ ] Execution
   - [ ] [Execution hooks](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#execution-hooks)
-  - [ ] [Data-driven execution](https://docs.gauge.org/execution.html?os=macos&language=javascript&ide=vscode#data-driven-execution)
   - [ ] Tag-based execution filtering
 - [ ] Data Store
   - [x] ScenarioStore
@@ -56,7 +55,7 @@ module.exports = {
 - [x] Use TypeScript
 - [ ] Jest
   - [ ] Implement `getCacheKey`
-  - [ ] Debug options
+  - [x] Debug options
   - [ ] Entirely skipped specs don't seem to be shown in test results, but why? It'd be nice if skipped specs are shown explicitly.
   - [x] Support `step` for a steps without any test cases
 
