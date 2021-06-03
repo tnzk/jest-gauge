@@ -16,7 +16,7 @@ $ npm install --save-dev @tnzk/jest-gauge
 
 Add `jest.config.gauge.js`:
 
-```json
+```js
 module.exports = {
   roots: ['.'],
   moduleFileExtensions: ['js', 'spec'],
