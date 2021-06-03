@@ -112,3 +112,20 @@ test('can have a data table', () => {
   expect(specs[0].dataTable?.header).toBeDefined();
   expect(specs[0].dataTable?.body).toBeDefined();
 })
+
+const lightMd = `
+# Specification for the Welcome page
+
+Ordinary paragraphs are treated as comments, just ignored.
+
+## Scenario: Users open the site and see the welcome page
+
+* Open "https://duckduckgo.com/"
+* The user sees a cute cucumber-looking white bird`;
+
+test("won't eat scenario steps as tear down steps", () => {
+  const specs = buildTestPlanFromSpec(lightMd);
+  console.log(specs)
+  expect(specs[0].scenarios?.[0].steps).toHaveLength(2);
+  expect(specs[0].teardownSteps).toHaveLength(0);
+})

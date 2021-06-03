@@ -18,6 +18,14 @@ const tableToMap = (partialAst:AstNode):(DataTable | undefined) => {
   return dataTable;
 }
 
+const specFactory = (title:string):Spec => {
+  return { title, scenarios: [], paragraphs: [], steps: [], tags: [], teardownSteps: [],};
+};
+
+const scenarioFactory = (title:string):Scenario => {
+  return { title, paragraphs: [], steps: [], tags: [],};
+};
+
 export const buildTestPlanFromSpec = (markdown:string) => {
   const md = new MarkdownIt({});
   const ast = makeAST(md.parse(markdown, {}));
@@ -38,30 +46,18 @@ export const buildTestPlanFromSpec = (markdown:string) => {
   let inScenario = false;
 
   const teardownIndex = ast.findIndex((node:AstNode) => node.type == 'hr');
-  const teardownAst = ast.slice(teardownIndex);
-  ast.slice(0, teardownIndex).forEach((node:AstNode, i:number) => {
+  const teardownAst = teardownIndex > -1 ? ast.slice(teardownIndex) : undefined;
+  ast.slice(0, (teardownAst ? teardownIndex : undefined)).forEach((node:AstNode, i:number) => {
     switch (node.nodeType) {
       case 'heading':
         if (node.openNode.tag == 'h1') {
           if (currentSpec.title) specs.push(currentSpec);
-          currentSpec = {
-            title: node.children[0].content,
-            scenarios: [],
-            paragraphs: [],
-            steps: [],
-            tags: [],
-            teardownSteps: [],
-          };
+          currentSpec = specFactory(node.children[0].content);
           inScenario = false;
         }
         if (node.openNode.tag == 'h2') {
           if (currentScenario.title) currentSpec.scenarios?.push(currentScenario);
-          currentScenario = {
-            title: node.children[0].content,
-            paragraphs: [],
-            steps: [],
-            tags: [],
-          };
+          currentScenario = scenarioFactory(node.children[0].content);
           inScenario = true;
         }
         break;
@@ -97,7 +93,7 @@ export const buildTestPlanFromSpec = (markdown:string) => {
   currentSpec.scenarios?.push(currentScenario);
   specs.push(currentSpec);
 
-  teardownAst.forEach((node:AstNode) => {
+  teardownAst?.forEach((node:AstNode) => {
     switch (node.nodeType) {
       case 'bullet_list': // TODO: Be DRY
         const latestSpec = specs[specs.length - 1];
