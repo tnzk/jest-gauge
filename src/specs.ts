@@ -26,25 +26,16 @@ const scenarioFactory = (title:string):Scenario => {
   return { title, paragraphs: [], steps: [], tags: [],};
 };
 
+const splitParagraphToTags = (s:string) =>
+  s.split(':')[1].split(',').map((s:string) => s.replace(/[\W\r\n]+/gm, ''));
+
 export const buildTestPlanFromSpec = (markdown:string) => {
   const md = new MarkdownIt({});
   const ast = makeAST(md.parse(markdown, {}));
   const specs:Spec[] = [];
-  let currentSpec:Spec = {
-    title: '',
-    scenarios: [],
-    paragraphs: [],
-    steps: [],
-    tags: [],
-    teardownSteps: [],
-  };
-
-  let currentScenario:Scenario = {
-    title: '',
-    paragraphs: [],
-    steps: [],
-    tags: [],
-  };
+  // TODO: little ugly
+  let currentSpec:Spec;
+  let currentScenario:Scenario;
   let inScenario = false;
 
   const teardownIndex = ast.findIndex((node:AstNode) => node.type == 'hr');
@@ -53,12 +44,12 @@ export const buildTestPlanFromSpec = (markdown:string) => {
     switch (node.nodeType) {
       case 'heading':
         if (node.openNode.tag == 'h1') {
-          if (currentSpec.title != '') specs.push(currentSpec);
+          if (currentSpec) specs.push(currentSpec);
           currentSpec = specFactory(node.children[0].content);
           inScenario = false;
         }
         if (node.openNode.tag == 'h2') {
-          if (currentScenario.title != '') currentSpec.scenarios?.push(currentScenario);
+          if (currentScenario) currentSpec.scenarios?.push(currentScenario);
           currentScenario = scenarioFactory(node.children[0].content);
           inScenario = true;
         }
@@ -68,12 +59,7 @@ export const buildTestPlanFromSpec = (markdown:string) => {
           const content = node.children[0].content;
           const inventory = inScenario ? currentScenario : currentSpec;
           if (content.startsWith('Tags:')) {
-            inventory.tags?.push(
-              ...content
-                .split(':')[1]
-                .split(',')
-                .map((s:string) => s.replace(/[\W\r\n]+/gm, '')),
-            );
+            inventory.tags?.push(...splitParagraphToTags(content));
           } else {
             inventory.paragraphs?.push(content);
           }
@@ -92,7 +78,9 @@ export const buildTestPlanFromSpec = (markdown:string) => {
         break;
     }
   });
+  // @ts-ignore: how do I tell tsc that currentSpec and currenScenario would be assigned in the loop?
   currentSpec.scenarios?.push(currentScenario);
+  // @ts-ignore: same as above
   specs.push(currentSpec);
 
   teardownAst?.forEach((node:AstNode) => {
