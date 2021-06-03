@@ -43,7 +43,7 @@ module.exports = {
 - [ ] Execution
   - [ ] [Execution hooks](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#execution-hooks)
   - [ ] Tag-based execution filtering
-- [ ] Data Store
+- [x] Data Store
   - [x] ScenarioStore
   - [x] SpecStore
   - [x] SuiteStore
@@ -53,10 +53,11 @@ module.exports = {
   - [ ] Taiko integration
 - [x] Add unit tests
 - [x] Use TypeScript
-- [ ] Jest
-  - [ ] Implement `getCacheKey`
+- [ ] Jest integration
+  - [x] Implement `getCacheKey`
   - [x] Debug options
   - [ ] Entirely skipped specs don't seem to be shown in test results, but why? It'd be nice if skipped specs are shown explicitly.
   - [x] Support `step` for a steps without any test cases
+  - [ ] Support RawSourceMap; [`source-map`](https://github.com/mozilla/source-map/blob/0.6.1/source-map.d.ts#L6-L12)
 
 cf. https://docs.gauge.org/writing-specifications.html

@@ -1,6 +1,10 @@
 import { jest, test, expect, describe, beforeEach } from '@jest/globals'
-import { process } from '../src/index'
+import { process, getCacheKey } from '../src/index'
 
-test('has at least a method called `process`', () => {
+test('has a method called `process`', () => {
     expect(process).toBeDefined();
+})
+
+test('has a method called `getCacheKey`', () => {
+    expect(getCacheKey).toBeDefined();
 })
