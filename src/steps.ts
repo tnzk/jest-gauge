@@ -121,15 +121,13 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
         ? scenario.steps.map(buildStep).join('\n')
         : placeholderStep;
 
-      const contextStepsString = (spec.steps && spec.steps.length > 0)
-        ? spec.steps.map(buildStep).join('\n')
-        : placeholderStep;
+      const contextStepsString = spec.steps?.map(buildStep).join('\n');
 
       return `describe${skipAnnotation}('${scenario.title}', () => {
           const senarioStore = {}
           beforeAll(() => {
           })
-          ${contextStepsString}
+          ${contextStepsString ?? ''}
           ${stepsString}
         })`;
     };
@@ -138,9 +136,7 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
       ? spec.scenarios?.map(buildScenario).join('\n')
       : placeholderStep;
 
-    const teardownStepsString = (spec.teardownSteps && spec.teardownSteps.length > 0)
-      ? spec.teardownSteps.map(buildStep).join('\n')
-      : placeholderStep;
+    const teardownStepsString = spec.teardownSteps?.map(buildStep).join('\n')
 
     const skipAnnotation = spec.tags?.includes('draft') ? '.skip' : '';
     return `
@@ -150,7 +146,7 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
         beforeEach(() => {
         });
         afterAll(() => {
-          ${teardownStepsString}
+          ${teardownStepsString ?? ''}
         })
         ${scenariosString}
       })`;

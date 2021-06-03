@@ -1,7 +1,7 @@
 type stringifiedFunction = string
 
 type Scenario = {
- title?:           string
+ title:            string
  tags?:            string[]
  paragraphs?:      string[]
  steps?:           stringifiedFunction[]
@@ -10,7 +10,7 @@ type Scenario = {
 type Concept = Scenario
 
 type Spec = {
- title?:      string
+ title:       string
  tags?:       string[]
  paragraphs?: string[]
  steps?:      stringifiedFunction[]

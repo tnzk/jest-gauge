@@ -31,6 +31,7 @@ export const buildTestPlanFromSpec = (markdown:string) => {
   const ast = makeAST(md.parse(markdown, {}));
   const specs:Spec[] = [];
   let currentSpec:Spec = {
+    title: '',
     scenarios: [],
     paragraphs: [],
     steps: [],
@@ -39,6 +40,7 @@ export const buildTestPlanFromSpec = (markdown:string) => {
   };
 
   let currentScenario:Scenario = {
+    title: '',
     paragraphs: [],
     steps: [],
     tags: [],
@@ -51,12 +53,12 @@ export const buildTestPlanFromSpec = (markdown:string) => {
     switch (node.nodeType) {
       case 'heading':
         if (node.openNode.tag == 'h1') {
-          if (currentSpec.title) specs.push(currentSpec);
+          if (currentSpec.title != '') specs.push(currentSpec);
           currentSpec = specFactory(node.children[0].content);
           inScenario = false;
         }
         if (node.openNode.tag == 'h2') {
-          if (currentScenario.title) currentSpec.scenarios?.push(currentScenario);
+          if (currentScenario.title != '') currentSpec.scenarios?.push(currentScenario);
           currentScenario = scenarioFactory(node.children[0].content);
           inScenario = true;
         }

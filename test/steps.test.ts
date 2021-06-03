@@ -99,6 +99,23 @@ test('has tear down steps', () => {
 
 test('has placeholder steps if one or more steps has no steps', () => {
   // @ts-ignore
+  setupMocksForTypicalStepsImpls();
+  const specs:Spec[] = [{
+    title: 'a spec',
+    steps: [],
+    scenarios: [{
+      title: 'a scenario',
+      steps: ['a test']
+    }],
+  }];
+
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource(specs, steps);
+  expect(transformedSource).not.toContain('currently no steps found for this spec');
+});
+
+test('is okay if a spec has no context steps, no placeholder steps', () => {
+  // @ts-ignore
   jest.spyOn(fs, "readdirSync").mockImplementation(() => { throw new Error('ENOENT') });
 
   const specs:Spec[] = [{
