@@ -17,3 +17,11 @@ test('"Cup Cakes" should show up in the search results', async () => {
 test('A context step', async () => {
   expect(1).toBe(1);
 });
+
+step('Teardown step 1', () => {
+  console.log("Teardown a thing... (1/2)")
+});
+
+step('Teardown step 2', () => {
+  console.log('Teardown a thing... (2/2)')
+});

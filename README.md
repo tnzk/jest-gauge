@@ -26,7 +26,7 @@ module.exports = {
   - [ ] Support [Env directory](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#env-directory)
   - [x] Support [data tables](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#table-driven-scenario)
   - [ ] Step alias
-  - [ ] Teardown steps
+  - [x] Teardown steps
 - [ ] Step parameters
   - [x] Simple parameters
   - [x] Dynamic parameters with data table
@@ -47,7 +47,7 @@ module.exports = {
 - [ ] Data Store
   - [x] ScenarioStore
   - [x] SpecStore
-  - [ ] SuiteStore
+  - [x] SuiteStore
 - [ ] Taking Custom Screenshots (?)
 - [ ] Examples
   - [ ] Puppeteer integration

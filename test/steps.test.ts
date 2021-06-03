@@ -8,6 +8,13 @@ beforeEach(() => {
   jest.resetModules();
 });
 
+const step1js = "test('a test', () => expect(0x1).toBe(1) )";
+const step2js = `
+test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000);
+test('a prerequisite', () => expect(0b11).toBe(3), 10000);
+test('a prerequisite with <param>', (param) => expect(param).toBe('Param'), 10000)
+step('Teardown step 1', () => console.log("Teardown 1"))
+step('Teardown step 2', () => console.log("Teardown 2"))`;
 const setupMocksForTypicalStepsImpls = () => {
   // TODO: apparently a test with internal implementation knowledge.
   // @ts-ignore
@@ -15,24 +22,13 @@ const setupMocksForTypicalStepsImpls = () => {
   //   https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34889
   jest.spyOn(fs, "readdirSync").mockImplementation(() => ['step-1.js', 'step-2.js']);
   jest.spyOn(fs, "readFileSync")
-    .mockImplementationOnce(() => "test('a test', () => expect(0x1).toBe(1) )")
-    .mockImplementationOnce(
-      () => `
-test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000);
-test('a prerequisite', () => expect(0b11).toBe(3), 10000);
-test('a prerequisite with <param>', (param) => expect(param).toBe('Param'), 10000)`
-    );
+    .mockImplementationOnce(() => step1js)
+    .mockImplementationOnce(() => step2js);
 };
 
 test('loads steps in a directory with the same basename adjacent to the spec file', () => {
   setupMocksForTypicalStepsImpls();
-  expect(collectSteps('../foo/bar/example.spec')).toBe(
-    `test('a test', () => expect(0x1).toBe(1) )
-
-test('another test with parameter called <name>', (name) => expect(0b10).toBe(2), 10000);
-test('a prerequisite', () => expect(0b11).toBe(3), 10000);
-test('a prerequisite with <param>', (param) => expect(param).toBe('Param'), 10000)`
-  );
+  expect(collectSteps('../foo/bar/example.spec')).toBe(step1js + "\n" + step2js);
 });
 
 test('is okay if no directory with the same basename adjacent to the spec file', () => {
@@ -86,7 +82,15 @@ test('transformes into syntactically correct JavaScript code', () => {
   expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
 });
 
-test('has placeholder steps if one or more steps hav[e] no steps', () => {
+test('has tear down steps', () => {
+  setupMocksForTypicalStepsImpls();
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource(specs, steps);
+  expect(transformedSource).toContain('Teardown step 1')
+  expect(transformedSource).toContain('Teardown step 2')
+})
+
+test('has placeholder steps if one or more steps has no steps', () => {
   // @ts-ignore
   jest.spyOn(fs, "readdirSync").mockImplementation(() => { throw new Error('ENOENT') });
 
@@ -101,7 +105,6 @@ test('has placeholder steps if one or more steps hav[e] no steps', () => {
   expect(transformedSource).toContain('currently no steps found for this spec');
 });
 
-
 const specs:Spec[] = [
   {
     title: 'Title of An Acceptance Test',
@@ -109,8 +112,17 @@ const specs:Spec[] = [
     scenarios: [
       {
         title: 'Title of A Scenario',
-        steps: ['a test', 'another test with parameter called "Normad"', 'another test with parameter called <name>'],
+        steps: [
+          'a test',
+          'another test with parameter called "Normad"',
+          'another test with parameter called <name>',
+          'a test coming from a concept',
+        ],
       },
+    ],
+    teardownSteps: [
+      'Teardown step 1',
+      'Teardown step 2',
     ],
     dataTable: {
       header: ['id', 'name'],

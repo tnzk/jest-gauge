@@ -43,12 +43,18 @@ export const loadSteps = function(filename:string):StepMap {
   // `test` looks unused but is actually necessary to be called
   const test = (testTitle:string, testFunction:string, timeout?:number) => {
     const { stripped: title, args } = stripParameters(testTitle);
-    const functionString = stripParameters(testFunction.toString()).stripped;
+    const functionString = testFunction.toString();
     const timeoutString = timeout ? `, ${timeout}` : '';
     steps[sha1(title)] =`test('${title}', async () => { // TODO: make it aync if the original is
       await (${functionString})(${args.map((_, i) => `%${i+1}`).join(',')})
     }${timeoutString})`;
   };
+  const step = (stepTitle:string, stepFunction:string) => {
+    const { stripped: title, args } = stripParameters(stepTitle);
+    const functionString = stepFunction.toString();
+    steps[sha1(title)] =`// Step ${stepTitle}")\n(${functionString})(${args.map((_, i) => `%${i+1}`).join(',')});`;
+  };
+
   eval(collectSteps(filename));
   return steps;
 };
@@ -92,23 +98,23 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
 
   const buildSpec = (spec:Spec) => {
 
+    const dataTable = spec.dataTable;
+    const buildStep = (title:string) => {
+      if (/<.*?>/.test(title)) { // steps that contains dynamic parameter (<dyn_param>)
+        if (dataTable) {
+          const titlesWithOnlySimpleParameters = substituteDynamicParameters(title, dataTable)
+          return titlesWithOnlySimpleParameters
+            .flatMap((title) => resolveSimpleParameters(title, steps))
+            .join();
+        } // TODO: should this throw?
+      } else {
+        return resolveSimpleParameters(title, steps);
+      }
+    }
+
     const buildScenario = (scenario:Scenario) => {
 
-      const dataTable = spec.dataTable;
       const skipAnnotation = scenario.tags?.includes('draft') ? '.skip' : '';
-
-      const buildStep = (title:string) => {
-        if (/<.*?>/.test(title)) { // steps that contains dynamic parameter (<dyn_param>)
-          if (dataTable) {
-            const titlesWithOnlySimpleParameters = substituteDynamicParameters(title, dataTable)
-            return titlesWithOnlySimpleParameters
-              .flatMap((title) => resolveSimpleParameters(title, steps))
-              .join();
-          } // TODO: should this throw?
-        } else {
-          return resolveSimpleParameters(title, steps);
-        }
-      }
 
       const stepsString = (scenario.steps && scenario.steps.length > 0)
         ? scenario.steps.map(buildStep).join('\n')
@@ -131,12 +137,20 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
       ? spec.scenarios?.map(buildScenario).join('\n')
       : placeholderStep;
 
+    const teardownStepsString = (spec.teardownSteps && spec.teardownSteps.length > 0)
+      ? spec.teardownSteps.map(buildStep).join('\n')
+      : placeholderStep;
+
     const skipAnnotation = spec.tags?.includes('draft') ? '.skip' : '';
     return `
-    describe${skipAnnotation}('${spec.title}', () => {
+      const suiteSore = {};
+      describe${skipAnnotation}('${spec.title}', () => {
         const specStore = {}
         beforeEach(() => {
         });
+        afterAll(() => {
+          ${teardownStepsString}
+        })
         ${scenariosString}
       })`;
   };

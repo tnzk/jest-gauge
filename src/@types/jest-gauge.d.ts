@@ -7,6 +7,8 @@ type Scenario = {
  steps?:           stringifiedFunction[]
 }
 
+type Concept = Scenario
+
 type Spec = {
  title?:      string
  tags?:       string[]
@@ -22,7 +24,7 @@ type DataTable = {
   body: string[],
 }
 
-declare   interface StepMap {
+declare interface StepMap {
   [sha1OfStep: string]: string;
 }
 

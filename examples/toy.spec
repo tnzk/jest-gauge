@@ -33,3 +33,8 @@ On an unknown product name search the search results will be empty
 * Open the product search page
 * Search for product "unknown"
 * The search results will be empty
+
+___
+
+* Teardown step 1
+* Teardown step 2
