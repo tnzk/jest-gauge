@@ -63,6 +63,13 @@ test('replaces placeholders with an actual simple parameter passed', () => {
   expect(transformedSource).toContain('another test with parameter called "Normad"')
 });
 
+test('keeps a step without corresponding implementation', () => {
+  setupMocksForTypicalStepsImpls();
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource(specs, steps);
+  expect(transformedSource).toContain('a test without corresponding implementation')
+});
+
 test('replaces placeholders with dynamic parameters fed through a data table', () => {
   setupMocksForTypicalStepsImpls();
   const steps = loadSteps('../foo/bar/example.spec');
@@ -117,6 +124,7 @@ const specs:Spec[] = [
           'another test with parameter called "Normad"',
           'another test with parameter called <name>',
           'a test coming from a concept',
+          'a test without corresponding implementation',
         ],
       },
     ],

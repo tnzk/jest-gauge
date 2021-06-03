@@ -58,6 +58,6 @@ module.exports = {
   - [ ] Implement `getCacheKey`
   - [ ] Debug options
   - [ ] Entirely skipped specs don't seem to be shown in test results, but why? It'd be nice if skipped specs are shown explicitly.
-  - [ ] Support `step` for a steps without any test cases
+  - [x] Support `step` for a steps without any test cases
 
 cf. https://docs.gauge.org/writing-specifications.html

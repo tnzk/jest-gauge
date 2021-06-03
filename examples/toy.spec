@@ -21,6 +21,7 @@ For an existing product name, the search result will contain the product name
 * User must be logged in as <role>
 * Open the product search page
 * Search for product "Cup Cakes"
+* A step without corresponding implementation
 * "Cup Cakes" should show up in the search results
 
 

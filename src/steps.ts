@@ -89,12 +89,13 @@ const resolveSimpleParameters = (title:string, steps:StepMap) => {
   // https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#step-implementations
   // So it should throw if a test case has insufficient number of parameters
   const { stripped, args } = stripParameters(title)
-  const stepSource = steps[sha1(stripped)]
+  const key = sha1(stripped);
+  const stepSource = steps[key] ? steps[key] : `test.skip("[No impl] ${stripped}", () => {})`;
   return substituteSimpleParameters(stepSource, args);
 }
 
 export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
-  const placeholderStep = "test('currently no steps found for this spec', () => { expect(false).toBe(true) })";
+  const placeholderStep = "test('currently no steps found for this spec or scenario', () => { expect(false).toBe(true) })";
 
   const buildSpec = (spec:Spec) => {
 
