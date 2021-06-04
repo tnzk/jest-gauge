@@ -125,7 +125,6 @@ Ordinary paragraphs are treated as comments, just ignored.
 
 test("won't eat scenario steps as tear down steps", () => {
   const specs = buildTestPlanFromSpec(lightMd);
-  console.log(specs)
   expect(specs[0].scenarios?.[0].steps).toHaveLength(2);
   expect(specs[0].teardownSteps).toHaveLength(0);
 })

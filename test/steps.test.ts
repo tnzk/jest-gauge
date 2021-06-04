@@ -89,6 +89,34 @@ test('transformes into syntactically correct JavaScript code', () => {
   expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
 });
 
+test('transformes even a troublesome spec into syntactically correct JavaScript code', () => {
+  setupMocksForTypicalStepsImpls();
+  const troblesomeSpec:Spec = {
+    title: 'a spec',
+    steps: [],
+    scenarios: [{
+      title: 'a scenario',
+      steps: ['a test without implementation with "a simple parameter"']
+    }],
+  };
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource([troblesomeSpec], steps);
+  const sandboxedSource = `(() => { ${transformedSource} })`;
+  const vm = require('vm');
+  const context = vm.createContext();
+  expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
+});
+
+test('transformes multiple specs at once into syntactically correct JavaScript code', () => {
+  setupMocksForTypicalStepsImpls();
+  const steps = loadSteps('../foo/bar/example.spec');
+  const transformedSource = buildTransformedSource([specs, specs].flat(), steps);
+  const sandboxedSource = `(() => { ${transformedSource} })`;
+  const vm = require('vm');
+  const context = vm.createContext();
+  expect(vm.runInContext(sandboxedSource, context)).not.toThrow(new SyntaxError());
+});
+
 test('has tear down steps', () => {
   setupMocksForTypicalStepsImpls();
   const steps = loadSteps('../foo/bar/example.spec');

@@ -90,7 +90,7 @@ const resolveSimpleParameters = (title:string, steps:StepMap) => {
   // So it should throw if a test case has insufficient number of parameters
   const { stripped, args } = stripParameters(title)
   const key = sha1(stripped);
-  const stepSource = steps[key] ? steps[key] : `test.skip("[No impl] ${stripped}", () => {})`;
+  const stepSource = steps[key] ? steps[key] : `test.skip('[No impl] ${stripped}', () => {})`;
   return substituteSimpleParameters(stepSource, args);
 }
 
@@ -140,7 +140,6 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
 
     const skipAnnotation = spec.tags?.includes('draft') ? '.skip' : '';
     return `
-      const suiteSore = {};
       describe${skipAnnotation}('${spec.title}', () => {
         const specStore = {}
         beforeEach(() => {
@@ -151,5 +150,5 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
         ${scenariosString}
       })`;
   };
-  return specs.map(buildSpec).join('\n');
+  return ['const suiteSore = {};', ...specs.map(buildSpec)].join('\n');
 };
