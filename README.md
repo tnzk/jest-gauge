@@ -17,14 +17,16 @@ $ npm install --save-dev @tnzk/jest-gauge
 Add `jest.config.gauge.js`:
 
 ```js
+// export default { // Use this for mjs instead
 module.exports = {
   roots: ['.'],
-  moduleFileExtensions: ['js', 'spec'],
-  testMatch: ['**/specs/*.spec'],
+  verbose: true,
+  moduleFileExtensions: ['js', 'spec', 'md'],
+  testMatch: ['**/specs/*.spec', '**/specs/*.md'],
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
-    '^.+\\.spec$': 'jest-gauge',
-  },
+    "^.+\\.(spec|md)?$": [ "./dist/index.cjs", { debug: false } ]
+  }
 };
 ```
 
@@ -89,7 +91,7 @@ So I've crafted a Jest extension which can recognize specification files (hopefu
 # TODO
 
 - [ ] Spec
-  - [ ] Support `.md` extension
+  - [x] Support `.md` extension
   - [ ] Support [manifest files](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#manifest-file)
   - [ ] Support [Env directory](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#env-directory)
   - [x] Support [data tables](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#table-driven-scenario)
@@ -132,4 +134,4 @@ cf. https://docs.gauge.org/writing-specifications.html
 
 # 日本語版
 
-まだありません :smile:
+まだありません :smiling_face_with_tear:

@@ -1,9 +1,9 @@
 export default {
   roots: ['examples'],
   verbose: true,
-  moduleFileExtensions: ['js', 'spec',],
-  testMatch: ['**/examples/*.spec'],
+  moduleFileExtensions: ['js', 'spec', 'md'],
+  testMatch: ['**/examples/*.spec', '**/examples/*.md'],
   transform: {
-    "^.+\\.spec?$": [ "./dist/index.cjs", { debug: false } ]
+    "^.+\\.(spec|md)?$": [ "./dist/index.cjs", { debug: false } ]
   }
 };
