@@ -1,5 +1,5 @@
 {
-  "name": "@tnzk/jest-gauge",
+  "name": "jest-gauge",
   "description": "Write acceptance tests in Gauge syntax with Jest-based steps",
   "version": "0.0.6",
   "license": "BSD-3-Clause",

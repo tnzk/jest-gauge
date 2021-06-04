@@ -23,7 +23,7 @@ module.exports = {
   testMatch: ['**/specs/*.spec'],
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
-    '^.+\\.spec$': '@tnzk/jest-gauge',
+    '^.+\\.spec$': 'jest-gauge',
   },
 };
 ```
@@ -82,7 +82,7 @@ Time:        0.913 s
 
 # Background
 
-I'm interested in [Gauge](https://docs.gauge.org) which looks a quite promising as an ATDD framework, however, it is a little too opinionated (at least for me) to integrate it an existing project, especially if you have had a bunch of unit and E2E tests in Jest there.
+I'm interested in [Gauge](https://docs.gauge.org) which looks a quite promising as an ATDD framework, however, it is a little too opinionated to integrate it with an existing project, especially if you have had a bunch of unit and E2E tests in Jest there.
 
 So I've crafted a Jest extension which can recognize specification files (hopefully) compatible to of Gauge and execute steps you implemented in Jest vocabulary like test/expect among the others.
 
