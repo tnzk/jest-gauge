@@ -1,4 +1,4 @@
-:warning: **This is an experimental project in very early stage. Try out at your own risk**. Any form of contributions are warmly appreciated as long as you agree to publish the work under [BSD-3 license](./LICENSE). 日本語版も末尾にあります。
+:warning: **This is an experimental project in very early stage. Try out at your own risk**. Any form of contributions are warmly appreciated as long as you agree to publish the work under [BSD-3 license](./LICENSE).
 
 # jest-gauge
 
