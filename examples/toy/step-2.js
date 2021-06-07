@@ -12,3 +12,8 @@ test('The search results will be empty', async () => {
   expect(1).toBe(1);
 });
 */
+
+test('The word <Word> has <Vowel Count> vowels.', (word, vowerlCount) => {
+  const n = (word.match(/[aiueo]/g) ?? []).length;
+  expect(n.toString()).toBe(vowerlCount);
+})

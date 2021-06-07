@@ -8,6 +8,7 @@ type ContainerMetaData = {
 
 type Scenario = ContainerMetaData & {
  steps?: stringifiedFunction[]
+ dataTable?:     DataTable
 }
 
 type Concept = Scenario

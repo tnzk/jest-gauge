@@ -29,6 +29,36 @@ const scenarioFactory = (title:string):Scenario => {
 const splitParagraphToTags = (s:string) =>
   s.split(':')[1].split(',').map((s:string) => s.replace(/[\W\r\n]+/gm, ''));
 
+const populateDataTable = (scenario:Scenario):Scenario[] => {
+  if (scenario.dataTable) {
+    const dataTable = scenario.dataTable;
+    const sizeOfElement = dataTable.header.length;
+    const nElements = dataTable.body.length / sizeOfElement;
+    const listOfValues = Array(nElements).fill(0).map((_, i) => {
+      const start = sizeOfElement * i;
+      const end = start + sizeOfElement;
+      const values = dataTable.body.slice(start, end);
+      return values;
+    });
+    const headers = dataTable.header;
+    return listOfValues.map(arr => {
+      // Create scenario that substituited with data table entries.
+      const newScenario = Object.assign({}, scenario);
+      newScenario.title += ` for "${arr[0]}"`;
+      if (newScenario.steps) {
+        newScenario.steps = newScenario.steps?.map(s =>
+          headers.reduce((acc, v, i) =>
+            acc.replace(`<${v}>`, `"${arr[i]}"`)
+          , s)
+        );
+      }
+      return newScenario;
+    });
+  } else {
+    return [scenario];
+  }
+};
+
 /**
  *
  * Parses a specification text in the format of Gauge flavored Markdown
@@ -48,7 +78,7 @@ export const buildTestPlanFromSpec = (markdown:string) => {
 
   const teardownIndex = ast.findIndex((node:AstNode) => node.type == 'hr');
   const teardownAst = teardownIndex > -1 ? ast.slice(teardownIndex) : undefined;
-  ast.slice(0, (teardownAst ? teardownIndex : undefined)).forEach((node:AstNode, i:number) => {
+  ast.slice(0, (teardownAst ? teardownIndex : undefined)).forEach((node:AstNode, i) => {
     switch (node.nodeType) {
       case 'heading':
         if (node.openNode.tag == 'h1') {
@@ -57,7 +87,9 @@ export const buildTestPlanFromSpec = (markdown:string) => {
           inScenario = false;
         }
         if (node.openNode.tag == 'h2') {
-          if (currentScenario) currentSpec.scenarios?.push(currentScenario);
+          if (currentScenario) {
+            currentSpec.scenarios?.push(...populateDataTable(currentScenario))
+          };
           currentScenario = scenarioFactory(node.children[0].content);
           inScenario = true;
         }
@@ -82,12 +114,17 @@ export const buildTestPlanFromSpec = (markdown:string) => {
         break;
       case 'table':
         // TODO: Does Gauge accept a spec with multiple data tables?
-        currentSpec.dataTable = tableToMap(node)
+        // NOTE: Scenario#dataTable shouldn't be accessible from outside of the module,
+        //       since it exists just for populating table-driven scenarios.
+        {
+          const inventory = inScenario ? currentScenario : currentSpec;
+          inventory.dataTable = tableToMap(node)
+        }
         break;
     }
   });
   // @ts-ignore: how do I tell tsc that currentSpec and currenScenario would be assigned in the loop?
-  currentSpec.scenarios?.push(currentScenario);
+  currentSpec.scenarios?.push(...populateDataTable(currentScenario))
   // @ts-ignore: same as above
   specs.push(currentSpec);
 

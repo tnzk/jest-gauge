@@ -27,6 +27,22 @@ Some writeup of this scenario
 - Another step with a "simple parameter"
 - Yet another step for this test
 
+## Table-driven scenario
+
+ |Word  |Vowel Count|
+ |------|-----------|
+ |Gauge |3          |
+ |Mingle|2          |
+ |Snap  |1          |
+ |GoCD  |1          |
+ |Rhythm|0          |
+
+This is the second scenario in this specification
+
+Here's a step that takes a table
+
+* The word <Word> has <Vowel Count> vowels.
+
 ___
 Teardown scripts
 
@@ -112,6 +128,17 @@ test('can have a data table', () => {
   expect(specs[0].dataTable?.header).toBeDefined();
   expect(specs[0].dataTable?.body).toBeDefined();
 })
+
+test('populates table-driven scenarios', () => {
+  const specs = buildTestPlanFromSpec(markdown);
+  const titles = specs[0].scenarios?.map((scenario) => scenario.title);
+  expect(titles).toContain('Table-driven scenario for "Gauge"');
+  expect(titles).toContain('Table-driven scenario for "Snap"');
+  expect(titles).toContain('Table-driven scenario for "Rhythm"');
+  const allStepsFlatten = specs[0].scenarios?.map(sn => sn.steps).flat();
+  expect(allStepsFlatten).toContain('The word "Gauge" has "3" vowels.');
+})
+
 
 const lightMd = `
 # Specification for the Welcome page

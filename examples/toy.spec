@@ -25,7 +25,7 @@ For an existing product name, the search result will contain the product name
 * "Cup Cakes" should show up in the search results
 
 
-## Unsuccessfull search
+## Skipped scenario
 Tags: test, draft
 
 On an unknown product name search the search results will be empty
@@ -34,6 +34,25 @@ On an unknown product name search the search results will be empty
 * Open the product search page
 * Search for product "unknown"
 * The search results will be empty
+
+## Table-driven scenario
+
+On an unknown product name search the search results will be empty
+
+ |Word  |Vowel Count|
+ |------|-----------|
+ |Gauge |3          |
+ |Mingle|2          |
+ |Snap  |1          |
+ |GoCD  |1          |
+ |Rhythm|0          |
+
+This is the second scenario in this specification
+
+Here's a step that takes a table
+
+* The word <Word> has <Vowel Count> vowels.
+
 
 ___
 

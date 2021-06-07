@@ -167,7 +167,8 @@ const specs:Spec[] = [
         steps: [
           'a test',
           'another test with parameter called "Normad"',
-          'another test with parameter called <name>',
+          'another test with parameter called <Their Name>',
+          'another test with parameter called <Team Name>',
           'a test coming from a concept',
           'a test without corresponding implementation',
         ],
@@ -178,7 +179,7 @@ const specs:Spec[] = [
       'Teardown step 2',
     ],
     dataTable: {
-      header: ['id', 'name'],
+      header: ['id', 'Their Name'],
       body: ['1', 'Alpha', '2', 'Bravo', '3', 'Charlie']
     },
   },
