@@ -1,22 +1,22 @@
 type stringifiedFunction = string
 
-type Scenario = {
- title:            string
- tags?:            string[]
- paragraphs?:      string[]
- steps?:           stringifiedFunction[]
+type ContainerMetaData = {
+  title:       string
+  tags?:       string[]
+  paragraphs?: string[]
+ }
+
+type Scenario = ContainerMetaData & {
+ steps?: stringifiedFunction[]
 }
 
 type Concept = Scenario
 
-type Spec = {
- title:       string
- tags?:       string[]
- paragraphs?: string[]
- steps?:      stringifiedFunction[]
- scenarios?:  Scenario[]
+type Spec = ContainerMetaData & {
+ steps?:         stringifiedFunction[] // NOTE: Context steps, not test cases.
+ scenarios?:     Scenario[]
  teardownSteps?: stringifiedFunction[]
- dataTable?:  DataTable
+ dataTable?:     DataTable
 }
 
 type DataTable = {

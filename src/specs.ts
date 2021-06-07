@@ -29,6 +29,14 @@ const scenarioFactory = (title:string):Scenario => {
 const splitParagraphToTags = (s:string) =>
   s.split(':')[1].split(',').map((s:string) => s.replace(/[\W\r\n]+/gm, ''));
 
+/**
+ *
+ * Parses a specification text in the format of Gauge flavored Markdown
+ * and constructs a list of instances of Spec.
+ *
+ * @param markdown A markdown text in Gauge specification format.
+ * @returns A list of specs
+ */
 export const buildTestPlanFromSpec = (markdown:string) => {
   const md = new MarkdownIt({});
   const ast = makeAST(md.parse(markdown, {}));
