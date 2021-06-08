@@ -55,7 +55,11 @@ export const loadSteps = function(filename:string):StepMap {
     steps[sha1(title)] =`// Step ${stepTitle}")\n(${functionString})(${args.map((_, i) => `%${i+1}`).join(',')});`;
   };
 
-  eval(collectSteps(filename));
+  const source = collectSteps(filename);
+  const vm = require('vm');
+  const context = vm.createContext({test, step});
+  vm.runInContext(source, context);
+
   return steps;
 };
 
