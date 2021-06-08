@@ -71,6 +71,10 @@ const substituteSimpleParameters = (func:stringifiedFunction, params:string[]):s
   return updatedFunction;
 }
 
+// Corresponds to "Data driven execution" and "Dynamic parameters with Data table"
+// cf.
+//   https://docs.gauge.org/execution.html?os=macos&language=javascript&ide=vscode#data-driven-execution
+//   https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#dynamic-parameters
 const substituteDynamicParameters = (title:string, dataTable:DataTable):string[] => {
   const re = /<(.*?)>/g;
   let match, i = 0;
@@ -81,6 +85,7 @@ const substituteDynamicParameters = (title:string, dataTable:DataTable):string[]
     const fieldLength = dataTable.header.length;
     const fieldIndex = dataTable.header.indexOf(fieldName);
     dataTable.body.forEach((s, i) => {
+      // TODO: seems not supporting multiple dynamic parameters?
       if ((i % fieldLength) == fieldIndex)
         titles.push(title.replace(tag, `"${s}"`))
     })

@@ -5,6 +5,13 @@ const traverseContent = (partialAst:AstNode):string[] =>
   partialAst.content ? [partialAst.content] : partialAst.children.flatMap(traverseContent);
 
 const tableToMap = (partialAst:AstNode):(DataTable | undefined) => {
+  /*
+    > A data table is defined in Markdown table format at the beginning of the spec prior to steps. The data table should have a header row and one or more data rows. The header names from the table can be used in the steps within angular brackets < > to refer to a particular column from the data table as a parameter.
+    >
+    > When a spec is run, each scenario is executed for every data row of the table. Table parameters are written in Multi-Markdown table formats.
+
+    cf. https://docs.gauge.org/execution.html?os=macos&language=javascript&ide=vscode#data-driven-execution
+  */
   if (partialAst.nodeType != 'table') return undefined;
   // TODO: what if a table node has more than one thead or tbody?
   const headerAst = partialAst.children.find((node:AstNode) => node.nodeType == 'thead')
@@ -29,6 +36,8 @@ const scenarioFactory = (title:string):Scenario => {
 const splitParagraphToTags = (s:string) =>
   s.split(':')[1].split(',').map((s:string) => s.replace(/[\W\r\n]+/gm, ''));
 
+// Corresponds to "Table driven scenario"
+// cf. https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#table-driven-scenario
 const populateDataTable = (scenario:Scenario):Scenario[] => {
   if (scenario.dataTable) {
     const dataTable = scenario.dataTable;

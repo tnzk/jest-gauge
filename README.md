@@ -105,9 +105,9 @@ So I've crafted a Jest extension which can recognize specification files (hopefu
   - [ ] Special parameters
     - [ ] File
     - [ ] Table
-- [ ] Scenario
+- [x] Scenario
   - [x] [Table driven scenario](https://docs.gauge.org/writing-specifications.html?os=macos&language=javascript&ide=vscode#table-driven-scenario) (note that it is in experiment as of Gauge 1.0.3)
-  - [ ] [Data-driven execution](https://docs.gauge.org/execution.html?os=macos&language=javascript&ide=vscode#data-driven-execution)
+  - [x] [Data-driven execution](https://docs.gauge.org/execution.html?os=macos&language=javascript&ide=vscode#data-driven-execution)
 - [ ] Concepts
 - [x] Contexts
 - [ ] Continue on Failure
@@ -123,7 +123,7 @@ So I've crafted a Jest extension which can recognize specification files (hopefu
   - [ ] Puppeteer integration
   - [ ] Taiko integration
 - [x] Add unit tests
-- [] TypeScript
+- [ ] TypeScript
   - [x] Jest-gauge itself in TypeScript
   - [ ] Support step implementations in TypeScript
 - [ ] Jest integration
