@@ -1,6 +1,6 @@
 {
   "name": "jest-gauge",
-  "description": "Write acceptance tests in Gauge syntax with Jest-based steps",
+  "description": "Write executable acceptance tests with Jest, in your mother tongue, just loosely structured in Markdown.",
   "version": "0.0.8",
   "license": "BSD-3-Clause",
   "author": "@tnzk",
