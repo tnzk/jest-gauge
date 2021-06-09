@@ -11,7 +11,7 @@ Assuming you're already using [Jest](https://jestjs.io/) for unit testing.
 Install via npm (yarn or other package manager, unconfirmed):
 
 ```bash
-$ npm install --save-dev @tnzk/jest-gauge
+$ npm install --save-dev /jest-gauge
 ```
 
 Add `jest.config.gauge.js`:
@@ -25,7 +25,7 @@ module.exports = {
   testMatch: ['**/specs/*.spec', '**/specs/*.md'],
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
-    "^.+\\.(spec|md)?$": [ "./dist/index.cjs", { debug: false } ]
+    "^.+\\.(spec|md)?$": [ 'jest-gauge', { debug: false } ]
   }
 };
 ```
@@ -125,7 +125,7 @@ So I've crafted a Jest extension which can recognize specification files (hopefu
 - [x] Add unit tests
 - [ ] TypeScript
   - [x] Jest-gauge itself in TypeScript
-  - [ ] Support step implementations in TypeScript
+  - [ ] Support step implementations in TypeScript (should be satisfiable by using babel-jest altogether)
 - [ ] Jest integration
   - [x] Implement `getCacheKey`
   - [x] Debug options
