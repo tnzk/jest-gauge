@@ -120,7 +120,7 @@ So I've crafted a Jest extension which can recognize specification files (hopefu
   - [x] SuiteStore
 - [ ] Taking Custom Screenshots (?)
 - [ ] Examples
-  - [ ] Puppeteer integration
+  - [x] Puppeteer integration
   - [ ] Taiko integration
 - [x] Add unit tests
 - [ ] TypeScript
