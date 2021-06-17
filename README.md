@@ -121,7 +121,7 @@ So I've crafted a Jest extension which can recognize specification files (hopefu
 - [ ] Taking Custom Screenshots (?)
 - [ ] Examples
   - [x] Puppeteer integration
-  - [ ] Taiko integration
+  - [x] Taiko integration (very experimental)
 - [x] Add unit tests
 - [ ] TypeScript
   - [x] Jest-gauge itself in TypeScript
