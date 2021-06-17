@@ -4,6 +4,9 @@ export default {
   moduleFileExtensions: ['js', 'spec', 'md'],
   testMatch: ['**/examples/*.spec', '**/examples/*.md'],
   transform: {
-    "^.+\\.(spec|md)?$": [ "./dist/index.cjs", { debug: false } ]
+    "^.+\\.(spec|md)?$": [ "./dist/index.cjs", {
+      debug: false,
+      taiko: true,
+    }],
   }
 };

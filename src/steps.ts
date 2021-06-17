@@ -103,8 +103,9 @@ const resolveSimpleParameters = (title:string, steps:StepMap) => {
   return substituteSimpleParameters(stepSource, args);
 }
 
-export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
+export const buildTransformedSource = (specs:Spec[], steps:StepMap, options?:TransformOptions) => {
   const placeholderStep = "test('currently no steps found for this spec or scenario', () => { expect(false).toBe(true) })";
+  const importTaikoVerbs = options?.['taiko'] ? 'const { openBrowser, text, goto, write, press, closeBrowser } = require("taiko");' : '';
 
   const buildSpec = (spec:Spec) => {
 
@@ -159,5 +160,5 @@ export const buildTransformedSource = (specs:Spec[], steps:StepMap) => {
         ${scenariosString}
       })`;
   };
-  return ['const suiteSore = {};', ...specs.map(buildSpec)].join('\n');
+  return [importTaikoVerbs, 'const suiteSore = {};', ...specs.map(buildSpec)].join('\n');
 };

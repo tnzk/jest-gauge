@@ -25,10 +25,13 @@ type DataTable = {
   body: string[],
 }
 
+type TransformOptions = {
+  taiko: boolean,
+};
+
 declare interface StepMap {
   [sha1OfStep: string]: string;
 }
-
 
 declare module 'spec' {
    export function buildTestPlanFromSpec(markdown:string):Spec
@@ -36,5 +39,5 @@ declare module 'spec' {
 
 declare module 'step' {
   export function loadSteps(filename:string):StepMap
-  export function buildTransformedSource(specs:Spec[], steps:StepMap):string
+  export function buildTransformedSource(specs:Spec[], steps:StepMap, options?:TransformOptions):string
 }

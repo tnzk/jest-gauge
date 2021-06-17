@@ -33,7 +33,7 @@ const jestGauge = {
     const opt = getTransformOptions(config);
     const specs = buildTestPlanFromSpec(sourceText);
     const stepStore = loadSteps(sourcePath);
-    const transformed = buildTransformedSource(specs, stepStore);
+    const transformed = buildTransformedSource(specs, stepStore, { taiko: opt?.['taiko'] });
     if (opt?.['debug']) {
       console.debug('[jest-gauge:Options]', opt);
       console.debug('[jest-gauge:Parsed spec]', specs);
